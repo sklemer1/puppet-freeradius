@@ -1,0 +1,13 @@
+home_server <%= @name %> {
+        type = <%= @type %>
+        <% if @ipaddr %>ipaddr = <%= @ipaddr %><% end %>
+        <% if @ipv6addr %>ipv6addr = <%= @ipv6addr %><% end %>
+        port = <%= @port %>
+        secret = <%= @secret %>
+        response_window = <%= @response_window %>
+        zombie_period = <%= @zombie_period %>
+        revive_interval = <%= @revive_interval %>
+        status_check = <%= @status_check %>
+        check_interval = <%= @check_interval %>
+        num_answers_to_alive = <%= @num_answers_to_alive %>
+}

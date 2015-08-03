@@ -1,6 +1,6 @@
 {
-  "name": "jgazeley-freeradius",
-  "version": "0.4.3",
+  "name": "jgazeley/freeradius",
+  "version": "0.4.2",
   "author": "jgazeley",
   "summary": "Install and configure FreeRADIUS",
   "license": "Apache-2.0",
@@ -25,26 +25,9 @@
     }
   ],
   "dependencies": [
-    {
-      "name": "puppetlabs/stdlib",
-      "version_range": ">=4.0.0"
-    },
-    {
-      "name": "puppetlabs/firewall",
-      "version_range": ">=1.0.0 <2.0.0"
-    },
-    {
-      "name": "jgazeley/syslog",
-      "version_range": ">=0.1.0"
-    },
-    {
-      "name": "rodjek/logrotate",
-      "version_range": ">=1.1.1"
-    },
-    {
-      "name": "puppetlabs/concat",
-      "version_range": ">=1.0.0"
-    }
+    {"name":"puppetlabs/stdlib"},
+    {"name":"puppetlabs/firewall"},
+    {"name":"jgazeley/syslog"},
+    {"name":"puppetlabs/concat"}
   ]
 }
-

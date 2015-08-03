@@ -12,6 +12,8 @@ define freeradius::client (
   $srcip          = undef,
   $firewall       = false,
   $ensure         = present,
+  $require_message_authenticator = "no",
+  $proto          = '*',
 ) {
   $fr_package  = $::freeradius::params::fr_package
   $fr_service  = $::freeradius::params::fr_service
@@ -27,6 +29,14 @@ define freeradius::client (
     require => [File["${fr_basepath}/clients.d"], Group[$fr_group]],
     notify  => Service[$fr_service],
   }
+
+  unless $require_message_authenticator in ['yes', 'no'] {
+    fail('$require_message_authenticator must be yes or no')
+  } 
+  unless $proto in ['*', 'udp', 'tcp'] {
+    fail('$proto must be *, udp or tcp')
+  } 
+
 
   if ($firewall and $ensure == 'present') {
     if $port {

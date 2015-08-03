@@ -1,16 +1,6 @@
-######################################################################
-######################################################################
-##   THIS FILE IS MANAGED BY PUPPET. DO NOT MAKE LOCAL EDITS!       ##
-######################################################################
-######################################################################
-
-# This is the stock FreeRADIUS 'detail' log. We leave it unaltered
-# and instead make further instantiations that inherit from it and 
-# change parameters if necessary
-
 # -*- text -*-
 #
-#  $Id$
+#  $Id: db03a5209eea7db9f9a33387279902b0d056bc59 $
 
 # Write a detailed log of all accounting records received.
 #
@@ -41,7 +31,20 @@ detail {
 	#  be ONE "listen" section reading detail files from a
 	#  particular directory.
 	#
-	detailfile = ${radacctdir}/%{%{Virtual-Server}:-UNKNOWN}/detail.log
+	filename = ${radacctdir}/%{%{Packet-Src-IP-Address}:-%{Packet-Src-IPv6-Address}}/detail-%Y%m%d
+
+	#
+	#  If you are using radrelay, delete the above line for "file",
+	#  and use this one instead:
+	#
+#	filename = ${radacctdir}/detail
+
+	#
+	#  Most file systems can handly nearly the full range of UTF-8
+	#  characters.  Ones that can deal with a limited range should
+	#  set this to "yes".
+	#
+	escape_filenames = no
 
 	#
 	#  The Unix-style permissions on the 'detail' file.
@@ -50,14 +53,21 @@ detail {
 	#  information about users.  So by keeping the file
 	#  permissions restrictive, we can prevent unwanted
 	#  people from seeing that information.
-	detailperm = 0640
+	permissions = 0600
+
+	# The Unix group of the log file.
+	#
+	# The user that the server runs as must be in the specified
+	# system group otherwise this will fail to work.
+	#
+#	group = ${security.group}
 
 	#
 	#  Every entry in the detail file has a header which
 	#  is a timestamp.  By default, we use the ctime
 	#  format (see "man ctime" for details).
 	#
-	#  The header can be customized by editing this
+	#  The header can be customised by editing this
 	#  string.  See "doc/variables.txt" for a description
 	#  of what can be put here.
 	#
@@ -83,7 +93,8 @@ detail {
 	#
 	# The attributes should be listed one to a line.
 	#
-	suppress {
-		User-Password
-	}
+	#suppress {
+		# User-Password
+	#}
+
 }

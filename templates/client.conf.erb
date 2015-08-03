@@ -4,7 +4,8 @@ client <%= @shortname %> {
 	<% if @netmask %>netmask = <%= @netmask %><% end %>
 	shortname = <%= @shortname %>
 	secret = "<%= @secret %>"
+	proto = "<%= @proto %>"
 	<% if @virtual_server %>virtual_server = <%= @virtual_server %><% end %>
 	<% if @nastype %>nastype = <%= @nastype %><% end %>
-	require_message_authenticator = no
+	require_message_authenticator = <%= @require_message_authenticator %>
 }

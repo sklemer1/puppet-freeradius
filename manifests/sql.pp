@@ -6,7 +6,7 @@ define freeradius::sql (
   $login = 'radius',
   $radius_db = 'radius',
   $num_sql_socks = '${thread[pool].max_servers}',
-  $query_file = 'sql/${database}/dialup.conf',
+  $query_file = 'queries.conf',
   $custom_query_file = '',
   $lifetime = '0',
   $max_queries = '0',
@@ -19,10 +19,6 @@ define freeradius::sql (
   $groupcheck_table = 'radgroupcheck',
   $groupreply_table = 'radgroupreply',
   $usergroup_table = 'radusergroup',
-  $deletestalesessions = 'yes',
-  $sqltrace = 'no',
-  $sqltracefile = '${logdir}/sqltrace.sql',
-  $connect_failure_retry_delay = '60',
   $nas_table = 'nas',
   $read_groups = 'yes',
   $port = '3306',
@@ -48,26 +44,10 @@ define freeradius::sql (
   unless is_integer($port) {
     fail('$port must be an integer')
   }
-  unless is_integer($num_sql_socks) {
-    fail('$num_sql_socks must be an integer')
-  }
   unless is_integer($lifetime) {
     fail('$lifetime must be an integer')
   }
-  unless is_integer($max_queries) {
-    fail('$max_queries must be an integer')
-  }
-  unless is_integer($connect_failure_retry_delay) {
-    fail('$connect_failure_retry_delay must be an integer')
-  }
 
-  # Fake booleans (FR uses yes/no instead of true/false)
-  unless $deletestalesessions in ['yes', 'no'] {
-    fail('$deletestalesessions must be yes or no')
-  }
-  unless $sqltrace in ['yes', 'no'] {
-    fail('$sqltrace must be yes or no')
-  }
   unless $read_groups in ['yes', 'no'] {
     fail('$read_groups must be yes or no')
   }
@@ -76,19 +56,32 @@ define freeradius::sql (
   }
 
   # Generate a module config, based on sql.conf
-  file { "${fr_basepath}/modules/${name}":
+  file { "${fr_basepath}/mods-enabled/${name}":
     ensure  => $ensure,
     mode    => '0640',
     owner   => 'root',
     group   => $fr_group,
-    content => template('freeradius/sql.conf.erb'),
+    content => template('freeradius/modules/sql.erb'),
     require => [Package[$fr_package], Group[$fr_group]],
     notify  => Service[$fr_service],
   }
 
+  file { "${fr_basepath}/mods-config/sql":
+    ensure  => $ensure,
+    mode    => '0750',
+    owner   => 'root',
+    group   => $fr_group,
+    source  => 'puppet:///modules/freeradius/mods-config/sql',
+    content => $content,
+    require => [Package[$fr_package], Group[$fr_group]],
+    notify  => Service[$fr_service],
+    recurse => true,
+  }
+
+
   # Install custom query file
   if ($custom_query_file) {
-    file { "${fr_basepath}/sql/${database}/dialup.conf":
+    file { "${fr_basepath}/mods-config/sql/main/${database}/queries.conf":
       ensure  => $ensure,
       mode    => '0640',
       owner   => 'root',
@@ -99,16 +92,4 @@ define freeradius::sql (
     }
   }
 
-  # Install rotation for sqltrace if we are using it
-  if ($sqltrace == 'yes') {
-    logrotate::rule { 'sqltrace':
-      path         => "{$freeradius::fr_logpath}/${sqltracefile}",
-      rotate_every => 'week',
-      rotate       => 1,
-      create       => true,
-      compress     => true,
-      missingok    => true,
-      postrotate   => 'kill -HUP `cat /var/run/radiusd/radiusd.pid`',
-    }
-  }
 }

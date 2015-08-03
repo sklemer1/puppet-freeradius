@@ -1,0 +1,6 @@
+home_server_pool <%= @name %> {
+        type = <%= @type %>
+<% @home_server.each do |val| -%>
+        home_server = <%= val %>
+<% end -%>
+}

@@ -1,5 +1,12 @@
 # freeradius
 
+IMPORTANT:
+Adjusted for FreeRADIUS 3; not everything written below is
+still correct and some things have been added. Stay tuned for a better
+description...
+
+2015-07-01 Steffen Klemer <moh@gmx.org>
+
 #### Table of Contents
 
 1. [Overview](#overview)
@@ -496,9 +503,11 @@ development effort if the features aren't useful to my employer.
 
 ## Release Notes
 
-### 0.4.3
-
- * Manage log rotation with [rodjek/logrotate](https://forge.puppetlabs.com/rodjek/logrotate) instead of deploying flat files
+### 1.X.Y
+  * Major Rewrite for freeradius 3
+  * new proxy class
+  * Some new options here and there
+  * ...
 
 ### 0.4.2
 

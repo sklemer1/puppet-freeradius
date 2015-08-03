@@ -1,8 +1,9 @@
 # Base class to install FreeRADIUS
 class freeradius (
   $control_socket  = false,
-  $max_servers     = '4096',
-  $max_requests    = '4096',
+  $max_servers     = '32',
+  $max_requests    = '1024',
+  $proxy_fallback  = 'no',
   $mysql_support   = false,
   $perl_support    = false,
   $utils_support   = false,
@@ -50,12 +51,16 @@ class freeradius (
   file { [
     "${freeradius::fr_basepath}/certs",
     "${freeradius::fr_basepath}/clients.d",
+    "${freeradius::fr_basepath}/proxy.d",
     "${freeradius::fr_basepath}/sites-enabled",
     "${freeradius::fr_basepath}/sites-available",
     "${freeradius::fr_basepath}/instantiate",
+    "${freeradius::fr_basepath}/mods-enabled",
+    "${freeradius::fr_basepath}/mods-config",
   ]:
     ensure  => directory,
     purge   => true,
+    force   => true,
     recurse => true,
     mode    => '0750',
     owner   => 'root',
@@ -134,6 +139,18 @@ class freeradius (
     }
   }
 
+  unless $proxy_fallback in ['yes','no'] {
+     fail('$proxy_fallback has to be yes or no')
+  }
+  file { "${freeradius::fr_basepath}/proxy.d/server.conf":
+    mode    => '0640',
+    owner   => 'root',
+    group   => $freeradius::fr_group,
+    content => template('freeradius/proxy_init.conf.erb'),
+    require => [File["${freeradius::fr_basepath}/proxy.d"], Group[$fr_group]],
+    notify  => Service[$fr_service],
+  }
+
   # radiusd always tests its config before restarting the service, to avoid outage. If the config is not valid, the service
   # won't get restarted, and the puppet run will fail.
   service { $freeradius::fr_service:
@@ -200,36 +217,13 @@ class freeradius (
     require => [Package[$freeradius::fr_package], User[$freeradius::fr_user], Group[$freeradius::fr_group]],
   }
 
-  logrotate::rule { 'radacct':
-    path          => "${freeradius::fr_logpath}/radacct/*/*.log",
-    rotate_every  => 'day',
-    rotate        => 7,
-    create        => false,
-    missingok     => true,
-    compress      => true,
-    postrotate    => 'kill -HUP `cat /var/run/radiusd/radiusd.pid`',
-    sharedscripts => true,
-  }
-
-  logrotate::rule { 'checkrad':
-    path         => "${freeradius::fr_logpath}/checkrad.log",
-    rotate_every => 'week',
-    rotate       => 1,
-    create       => true,
-    missingok    => true,
-    compress     => true,
-    postrotate   => 'kill -HUP `cat /var/run/radiusd/radiusd.pid`',
-  }
-
-  logrotate::rule { 'radiusd':
-    path          => "${freeradius::fr_logpath}/rad*",
-    rotate_every  => 'week',
-    rotate        => 26,
-    create        => true,
-    missingok     => true,
-    compress      => true,
-    postrotate    => 'kill -HUP `cat /var/run/radiusd/radiusd.pid`',
-    sharedscripts => true,
+  # Updated logrotate file to include radiusd-*.log
+  file { "/etc/logrotate.d/${freeradius::fr_service}":
+    mode    => '0640',
+    owner   => 'root',
+    group   => $freeradius::fr_group,
+    content => template('freeradius/radiusd.logrotate.erb'),
+    require => [Package[$freeradius::fr_package], Group[$freeradius::fr_group]],
   }
 
   # Placeholder resource for dh and random as they are dynamically generated, so they

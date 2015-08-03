@@ -1,6 +1,6 @@
 # -*- text -*-
 #
-#  $Id$
+#  $Id: b91cf7cb24744ee96e390aa4d7bd5f3ad4c0c0ee $
 
 #
 #  More examples of doing detail logs.
@@ -14,55 +14,21 @@
 #  You will also need to un-comment the 'auth_log' line
 #  in the 'authorize' section, below.
 #
-detail auth_log-for-bsql {
-	detailfile = ${radacctdir}/%{%{Virtual-Server}:-UNKNOWN}/auth-bsql.log
+detail auth_log {
+	filename = ${radacctdir}/%{%{Packet-Src-IP-Address}:-%{Packet-Src-IPv6-Address}}/auth-detail-%Y%m%d
 
 	#
 	#  This MUST be 0600, otherwise anyone can read
 	#  the users passwords!
-	detailperm = 0600
-	locking = yes
-
-	# You may also strip out passwords completely
-	suppress {
-		User-Password
-		EAP-Message
-		Framed-MTU
-		State
-		Message-Authenticator
-		Packet-Type
-		Proxy-State
-		Tunnel-Type
-		Tunnel-Medium-Type
-		Tunnel-Private-Group-Id
-	}
-}
-
-detail auth_log {
-	detailfile = ${radacctdir}/%{%{Virtual-Server}:-UNKNOWN}/auth-detail.log
-
-	#  This MUST be 0600, otherwise anyone can read
-	#  the users passwords!
-	detailperm = 0600
+	permissions = 0600
 
 	# You may also strip out passwords completely
 	suppress {
 		User-Password
 	}
-
-	#  Log the Packet src/dst IP/port.  This is disabled by
-	#  default, as that information isn't used by many people.
-	log_packet_header = yes
 }
 
-# This is the same as the block above, except it allows passwords
-# # to be written to the log file
-detail auth_log_password {
-	detailfile = ${radacctdir}/%{%{Virtual-Server}:-UNKNOWN}/auth-detail.log
-	detailperm = 0600
-}
-
-
+#
 #  This module logs authentication reply packets sent
 #  to a NAS.  Both Access-Accept and Access-Reject packets
 #  are logged.
@@ -71,9 +37,9 @@ detail auth_log_password {
 #  in the 'post-auth' section, below.
 #
 detail reply_log {
-	detailfile = ${radacctdir}/%{%{Virtual-Server}:-UNKNOWN}/reply-detail.log
+	filename = ${radacctdir}/%{%{Packet-Src-IP-Address}:-%{Packet-Src-IPv6-Address}}/reply-detail-%Y%m%d
 
-	detailperm = 0600
+	permissions = 0600
 }
 
 #
@@ -83,12 +49,12 @@ detail reply_log {
 #  in the 'pre-proxy' section, below.
 #
 detail pre_proxy_log {
-	detailfile = ${radacctdir}/%{%{Virtual-Server}:-DEFAULT}/pre-proxy-detail.log
+	filename = ${radacctdir}/%{%{Packet-Src-IP-Address}:-%{Packet-Src-IPv6-Address}}/pre-proxy-detail-%Y%m%d
 
 	#
 	#  This MUST be 0600, otherwise anyone can read
 	#  the users passwords!
-	detailperm = 0600
+	permissions = 0600
 
 	# You may also strip out passwords completely
 	#suppress {
@@ -103,6 +69,7 @@ detail pre_proxy_log {
 #  in the 'post-proxy' section, below.
 #
 detail post_proxy_log {
-	detailfile = ${radacctdir}/%{%{Virtual-Server}:-DEFAULT}/post-proxy-detail.log
-	detailperm = 0600
+	filename = ${radacctdir}/%{%{Packet-Src-IP-Address}:-%{Packet-Src-IPv6-Address}}/post-proxy-detail-%Y%m%d
+
+	permissions = 0600
 }

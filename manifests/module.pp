@@ -1,6 +1,7 @@
 # Install FreeRADIUS modules
 define freeradius::module (
   $source = undef,
+  $config = undef,
   $content = undef,
   $ensure = present,
 ) {
@@ -9,7 +10,7 @@ define freeradius::module (
   $fr_basepath = $::freeradius::params::fr_basepath
   $fr_group    = $::freeradius::params::fr_group
 
-  file { "${fr_basepath}/modules/${name}":
+  file { "${fr_basepath}/mods-enabled/${name}":
     ensure  => $ensure,
     mode    => '0640',
     owner   => 'root',
@@ -19,4 +20,19 @@ define freeradius::module (
     require => [Package[$fr_package], Group[$fr_group]],
     notify  => Service[$fr_service],
   }
+
+  if $config {
+  file { "${fr_basepath}/mods-config/${name}":
+    ensure  => $ensure,
+    mode    => '0750',
+    owner   => 'root',
+    group   => $fr_group,
+    source  => $config,
+    content => $content,
+    require => [Package[$fr_package], Group[$fr_group]],
+    notify  => Service[$fr_service],
+    recurse => true,
+  }
+  }
+
 }
