@@ -3,7 +3,7 @@ class freeradius (
   $control_socket  = false,
   $max_servers     = '32',
   $max_requests    = '1024',
-  $proxy_fallback  = 'no',
+  $proxy_fallback  = false
   $mysql_support   = false,
   $perl_support    = false,
   $utils_support   = false,
@@ -140,8 +140,11 @@ class freeradius (
     }
   }
 
-  unless $proxy_fallback in ['yes','no'] {
-     fail('$proxy_fallback has to be yes or no')
+  if $proxy_fallback {
+    $proxy_fallback_str = 'yes'
+  }
+  else {
+    $proxy_fallback_str = 'no'
   }
   file { "${freeradius::fr_basepath}/proxy.d/server.conf":
     mode    => '0640',
