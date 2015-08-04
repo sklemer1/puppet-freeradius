@@ -105,8 +105,10 @@ define freeradius::proxy::server (
       fail('You have to set virtual_server OR ipaddr OR ipv6addr')
     }
   }
-  else if ($virtual_server) {
+  else {
+    if ($virtual_server) {
       fail('You have to set virtual_server OR ipaddr OR ipv6addr')
+    }
   }
 
   unless $type in ['auth', 'acct', 'auth+acct', 'coa'] {
