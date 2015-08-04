@@ -56,8 +56,8 @@ define freeradius::proxy::realm (
       mode    => '0640',
       owner   => 'root',
       group   => $fr_group,
-      content => template('freeradius/proxy_realm_hints.conf.erb'),
-      require => [File["${fr_basepath}/hints.d"], Group[$fr_group]],
+      content => template('freeradius/proxy_realm_users.conf.erb'),
+      require => [File["${fr_basepath}/users.d"], Group[$fr_group]],
       notify  => Service[$fr_service],
     } 
   } 
