@@ -58,7 +58,6 @@ define freeradius::sql (
     fail('$readclients must be yes or no')
   }
 
-  $query_file = 'queries.conf'
   # Install custom query file
   if ($custom_query_file) {
     $query_file = "queries_${name}.conf"
@@ -71,6 +70,9 @@ define freeradius::sql (
       require => [Package[$fr_package], Group[$fr_group]],
       notify  => Service[$fr_service],
     }
+  }
+  else {
+    $query_file = 'queries.conf'
   }
 
   # Generate a module config, based on sql.conf
