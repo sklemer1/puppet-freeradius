@@ -52,6 +52,7 @@ class freeradius (
     "${freeradius::fr_basepath}/certs",
     "${freeradius::fr_basepath}/clients.d",
     "${freeradius::fr_basepath}/proxy.d",
+    "${freeradius::fr_basepath}/hints.d",
     "${freeradius::fr_basepath}/sites-enabled",
     "${freeradius::fr_basepath}/sites-available",
     "${freeradius::fr_basepath}/instantiate",
