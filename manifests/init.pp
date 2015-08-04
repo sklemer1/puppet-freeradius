@@ -3,7 +3,7 @@ class freeradius (
   $control_socket  = false,
   $max_servers     = '32',
   $max_requests    = '1024',
-  $proxy_fallback  = false
+  $proxy_fallback  = false,
   $mysql_support   = false,
   $perl_support    = false,
   $utils_support   = false,
