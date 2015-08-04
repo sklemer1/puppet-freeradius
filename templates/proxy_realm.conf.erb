@@ -2,5 +2,6 @@ realm <%= realm %> {
         <% if @home_server %>home_server= <%= @home_server %><% end %>
         <% if @home_pool %>home_pool= <%= @home_pool %><% end %>
         <% if @auth_pool %>auth_pool= <%= @auth_pool %><% end %>
+        <% if @pool %>pool= <%= @pool %><% end %>
         <%= @strip_str %>
 }

@@ -5,9 +5,10 @@ define freeradius::proxy::realm (
   $home_server = undef,
   $home_pool   = undef,
   $auth_pool   = undef,
-  ms_chap_auth = undef,
-  ms_chap_domain = undef,
-  ms_chap_strip = false,
+  $pool        = undef,
+  $ms_chap_auth = undef,
+  $ms_chap_domain = undef,
+  $ms_chap_strip = false,
 ) {
   $fr_package  = $::freeradius::params::fr_package
   $fr_service  = $::freeradius::params::fr_service
