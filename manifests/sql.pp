@@ -58,10 +58,10 @@ define freeradius::sql (
     fail('$readclients must be yes or no')
   }
 
-  $query_file = 'queries.conf',
+  $query_file = 'queries.conf'
   # Install custom query file
   if ($custom_query_file) {
-    $query_file = "queries_${name}.conf",
+    $query_file = "queries_${name}.conf"
     file { "${fr_basepath}/mods-config/sql/main/${database}/queries_${name}.conf":
       ensure  => $ensure,
       mode    => '0640',
