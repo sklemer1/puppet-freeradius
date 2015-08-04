@@ -72,6 +72,7 @@ define freeradius::proxy::server (
   $secret,
   $ipaddr = undef,
   $ipv6addr = undef,
+  $virtual_server = undef,
   $type = "auth+acct",
   $port = 1812,
   $proto = 'udp',
@@ -98,8 +99,13 @@ define freeradius::proxy::server (
     notify  => Service[$fr_service],
   }
   
-  if ( (!($ipaddr or $ipv6addr)) or ($ipaddr and $ipv6addr)) {
-    fail('You have to set ipaddr OR ipv6addr')
+  if ( !($ipaddr or $ipv6addr) or ($ipaddr and $ipv6addr)) {
+    if (!$virtual_server) {
+      fail('You have to set virtual_server OR ipaddr OR ipv6addr')
+    }
+  }
+  else if ($virtual_server) {
+      fail('You have to set virtual_server OR ipaddr OR ipv6addr')
   }
 
   unless $type in ['auth', 'acct', 'auth+acct', 'coa'] {
