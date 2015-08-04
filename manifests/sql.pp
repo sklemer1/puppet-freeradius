@@ -23,6 +23,7 @@ define freeradius::sql (
   $read_groups = 'yes',
   $port = '3306',
   $readclients = 'no',
+  $min = '4',
 ) {
   $fr_package  = $::freeradius::params::fr_package
   $fr_service  = $::freeradius::params::fr_service
@@ -43,6 +44,9 @@ define freeradius::sql (
   # Validate integers
   unless is_integer($port) {
     fail('$port must be an integer')
+  }
+  unless is_integer($min) {
+    fail('$min must be an integer')
   }
   unless is_integer($lifetime) {
     fail('$lifetime must be an integer')
