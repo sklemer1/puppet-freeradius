@@ -6,7 +6,6 @@ define freeradius::sql (
   $login = 'radius',
   $radius_db = 'radius',
   $num_sql_socks = '${thread[pool].max_servers}',
-  $query_file = 'queries.conf',
   $custom_query_file = '',
   $lifetime = '0',
   $max_queries = '0',
@@ -59,33 +58,11 @@ define freeradius::sql (
     fail('$readclients must be yes or no')
   }
 
-  # Generate a module config, based on sql.conf
-  file { "${fr_basepath}/mods-enabled/${name}":
-    ensure  => $ensure,
-    mode    => '0640',
-    owner   => 'root',
-    group   => $fr_group,
-    content => template('freeradius/modules/sql.erb'),
-    require => [Package[$fr_package], Group[$fr_group]],
-    notify  => Service[$fr_service],
-  }
-
-  file { "${fr_basepath}/mods-config/sql":
-    ensure  => $ensure,
-    mode    => '0750',
-    owner   => 'root',
-    group   => $fr_group,
-    source  => 'puppet:///modules/freeradius/mods-config/sql',
-    content => $content,
-    require => [Package[$fr_package], Group[$fr_group]],
-    notify  => Service[$fr_service],
-    recurse => true,
-  }
-
-
+  $query_file = 'queries.conf',
   # Install custom query file
   if ($custom_query_file) {
-    file { "${fr_basepath}/mods-config/sql/main/${database}/queries.conf":
+    $query_file = "queries_${name}.conf",
+    file { "${fr_basepath}/mods-config/sql/main/${database}/queries_${name}.conf":
       ensure  => $ensure,
       mode    => '0640',
       owner   => 'root',
@@ -96,4 +73,14 @@ define freeradius::sql (
     }
   }
 
+  # Generate a module config, based on sql.conf
+  file { "${fr_basepath}/mods-enabled/${name}":
+    ensure  => $ensure,
+    mode    => '0640',
+    owner   => 'root',
+    group   => $fr_group,
+    content => template('freeradius/modules/sql.erb'),
+    require => [Package[$fr_package], Group[$fr_group]],
+    notify  => Service[$fr_service],
+  }
 }

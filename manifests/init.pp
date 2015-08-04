@@ -117,6 +117,16 @@ class freeradius (
     package { 'freeradius-mysql':
       ensure => installed,
     }
+    file { "${freeradius::fr_basepath}/mods-config/sql":
+      ensure  => directory,
+      mode    => '0750',
+      owner   => 'root',
+      group   => $freeradius::fr_group,
+      source  => 'puppet:///modules/freeradius/mods-config/sql',
+      require => [Package[$freeradius::fr_package], Group[$freeradius::fr_group]],
+      notify  => Service[$freeradius::fr_service],
+      recurse => true,
+    }
   }
   if $perl_support {
     package { 'freeradius-perl':
